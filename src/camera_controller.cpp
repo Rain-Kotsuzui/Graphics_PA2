@@ -1,12 +1,14 @@
 #include "camera_controller.hpp"
 #include <cmath>
 
-CameraController::CameraController(PerspectiveCamera *cam, float centerDistance) {
+CameraController::CameraController(PerspectiveCamera *cam, float centerDistance)
+{
     mpCamera = cam;
     mStartDistance = centerDistance;
 }
 
-void CameraController::mouseClick(CameraController::Button button, int x, int y) {
+void CameraController::mouseClick(CameraController::Button button, int x, int y)
+{
 
     setFromCamera();
     mStartClick[0] = x;
@@ -16,33 +18,37 @@ void CameraController::mouseClick(CameraController::Button button, int x, int y)
     mCurrentRot = mStartRot;
     mCurrentCenter = mStartCenter;
     mCurrentDistance = mStartDistance;
-
 }
 
-void CameraController::mouseDrag(int x, int y) {
-    switch (mButtonState) {
-        case LEFT:
-            arcBallRotation(x, y);
-            break;
-        case MIDDLE:
-            planeTranslation(x, y);
-            break;
-        case RIGHT:
-            distanceZoom(x, y);
-            break;
-        default:
-            break;
+void CameraController::mouseDrag(int x, int y)
+{
+    switch (mButtonState)
+    {
+    case LEFT:
+        arcBallRotation(x, y);
+        break;
+    case MIDDLE:
+        planeTranslation(x, y);
+        break;
+    case RIGHT:
+        distanceZoom(x, y);
+        break;
+    default:
+        break;
     }
     applyToCamera();
 }
 
-void CameraController::mouseRelease(int x, int y) {
+
+void CameraController::mouseRelease(int x, int y)
+{
     mButtonState = NONE;
     applyToCamera();
     mStartDistance = mCurrentDistance;
 }
 
-void CameraController::arcBallRotation(int x, int y) {
+void CameraController::arcBallRotation(int x, int y)
+{
     float sx, sy, sz, ex, ey, ez;
     float scale;
     float sl, el;
@@ -55,14 +61,19 @@ void CameraController::arcBallRotation(int x, int y) {
     ey = y - (mViewport[3] / 2.f);
 
     // invert y coordinates (raster versus device coordinates)
-    sy = -sy; sx = -sx;
-    ey = -ey; ex = -ex;
+    sy = -sy;
+    sx = -sx;
+    ey = -ey;
+    ex = -ex;
 
     // scale by inverse of size of window and magical sqrt2 factor
-    if (mViewport[2] > mViewport[3]) {
-        scale = (float) mViewport[3];
-    } else {
-        scale = (float) mViewport[2];
+    if (mViewport[2] > mViewport[3])
+    {
+        scale = (float)mViewport[3];
+    }
+    else
+    {
+        scale = (float)mViewport[2];
     }
 
     scale = 1.f / scale;
@@ -76,12 +87,14 @@ void CameraController::arcBallRotation(int x, int y) {
     sl = std::hypot(sx, sy);
     el = std::hypot(ex, ey);
 
-    if (sl > 1.f) {
+    if (sl > 1.f)
+    {
         sx /= sl;
         sy /= sl;
         sl = 1.0;
     }
-    if (el > 1.f) {
+    if (el > 1.f)
+    {
         ex /= el;
         ey /= el;
         el = 1.f;
@@ -97,7 +110,8 @@ void CameraController::arcBallRotation(int x, int y) {
     // compute axis from cross product.
     dotprod = sx * ex + sy * ey + sz * ez;
 
-    if (dotprod != 1) {
+    if (dotprod != 1)
+    {
         Vector3f axis(sy * ez - ey * sz, sz * ex - ez * sx, sx * ey - ex * sy);
         axis.normalize();
 
@@ -105,12 +119,15 @@ void CameraController::arcBallRotation(int x, int y) {
 
         mCurrentRot = Matrix3f::rotation(axis, angle);
         mCurrentRot = mCurrentRot * mStartRot;
-    } else {
+    }
+    else
+    {
         mCurrentRot = mStartRot;
     }
 }
 
-void CameraController::planeTranslation(int x, int y) {
+void CameraController::planeTranslation(int x, int y)
+{
     // map window x,y into viewport x,y
 
     // start
@@ -120,7 +137,6 @@ void CameraController::planeTranslation(int x, int y) {
     // current
     int cx = x - mViewport[0];
     int cy = y - mViewport[1];
-
 
     // compute "distance" of image plane (wrt projection matrix)
     float d = float(mViewport[3]) / 2.0f / mTanPerspective;
@@ -139,12 +155,11 @@ void CameraController::planeTranslation(int x, int y) {
     move *= -mCurrentDistance / d;
 
     mCurrentCenter = mStartCenter +
-                     - move[0] * Vector3f(mCurrentRot(0, 0), mCurrentRot(0, 1), mCurrentRot(0, 2))
-                     + move[1] * Vector3f(mCurrentRot(1, 0), mCurrentRot(1, 1), mCurrentRot(1, 2));
-
+                     -move[0] * Vector3f(mCurrentRot(0, 0), mCurrentRot(0, 1), mCurrentRot(0, 2)) + move[1] * Vector3f(mCurrentRot(1, 0), mCurrentRot(1, 1), mCurrentRot(1, 2));
 }
 
-void CameraController::distanceZoom(int x, int y) {
+void CameraController::distanceZoom(int x, int y)
+{
     int sy = mStartClick[1] - mViewport[1];
     int cy = y - mViewport[1];
 
@@ -154,14 +169,16 @@ void CameraController::distanceZoom(int x, int y) {
     mCurrentDistance = mStartDistance * std::exp(delta);
 }
 
-void CameraController::applyToCamera() {
+void CameraController::applyToCamera()
+{
     Vector3f t(0.0, 0.0, mCurrentDistance);
     Matrix3f rt = mCurrentRot.transposed();
     mpCamera->setCenter(-(rt * t) + mCurrentCenter);
     mpCamera->setRotation(rt);
 }
 
-void CameraController::setFromCamera() {
+void CameraController::setFromCamera()
+{
     mTanPerspective = std::tan(mpCamera->getFovy() / 2.0f);
     mViewport[0] = mViewport[1] = 0;
     mViewport[2] = mpCamera->getWidth();
@@ -170,5 +187,3 @@ void CameraController::setFromCamera() {
     mStartCenter = mpCamera->getCenter() + mStartDistance * mStartRot.getCol(2);
     mStartRot.transpose();
 }
-
-

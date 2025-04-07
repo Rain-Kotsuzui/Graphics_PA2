@@ -16,7 +16,7 @@ public:
     void mouseClick(Button button, int x, int y);
     void mouseDrag(int x, int y);
     void mouseRelease(int x, int y);
-
+    
     CameraController(PerspectiveCamera* cam, float centerDistance);
 
 protected:
@@ -47,5 +47,7 @@ protected:
     void arcBallRotation(int x, int y);
     void planeTranslation(int x, int y);
     void distanceZoom(int x, int y);
+    
+
 
 };

@@ -1,46 +1,55 @@
 #ifndef GROUP_H
 #define GROUP_H
 
-
 #include "object3d.hpp"
 #include "ray.hpp"
 #include "hit.hpp"
 #include <iostream>
 #include <vector>
 
-
-// TODO: Implement Group - add data structure to store a list of Object*
-class Group : public Object3D {
+class Group : public Object3D
+{
 
 public:
-
-    Group() {
-
+    Group()
+    {
     }
 
-    explicit Group (int num_objects) {
-
+    explicit Group(int num_objects)
+    {
+        objectList.resize(num_objects);
     }
 
-    ~Group() override {
-
+    ~Group() override
+    {
     }
 
-    bool intersect(const Ray &r, Hit &h, float tmin) override {
-
+    bool intersect(const Ray &r, Hit &h, float tmin) override
+    {
+        bool result = false;
+        for (auto obj : objectList)
+            result |= obj->intersect(r, h, tmin);
+        return result;
     }
 
-    void addObject(int index, Object3D *obj) {
-
+    void addObject(int index, Object3D *obj)
+    {
+        objectList[index] = obj;
     }
 
-    int getGroupSize() {
+    int getGroupSize()
+    {
+        return objectList.size();
+    }
 
+    void drawGL()override
+    {
+        for(auto obj:objectList)
+            obj->drawGL();
     }
 
 private:
-
+    std::vector<Object3D *> objectList;
 };
 
 #endif
-	

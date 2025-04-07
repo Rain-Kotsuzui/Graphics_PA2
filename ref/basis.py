@@ -3,7 +3,7 @@ import sys
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
-
+import matplotlib
 
 class Bernstein:
     """
@@ -83,7 +83,6 @@ class Bernstein:
 
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser(description='Basis function visualizer for B-Spline')
     parser.add_argument('--N', type=int, default=4, help='Number of control points')
     parser.add_argument('--k', type=int, default=3, help='Spline order x^k')
@@ -128,10 +127,11 @@ if __name__ == '__main__':
         plt.plot(t_range, l)
     plt.grid()
     plt.title('Basis function for ' + description)
-
+    plt.savefig('output1.png')
     plt.figure()
     for dl in deriv_lines:
         plt.plot(t_range, dl)
     plt.grid()
     plt.title('Derivative for ' + description)
     plt.show()
+    plt.savefig('output2.png')

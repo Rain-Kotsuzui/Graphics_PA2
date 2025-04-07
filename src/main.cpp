@@ -14,6 +14,7 @@
 
 #include <string>
 #include <glut.h>
+#include <freeglut.h>
 
 using namespace std;
 
@@ -24,18 +25,21 @@ CameraController *cameraController;
 int imgW, imgH;
 string savePicturePath;
 
-void screenCapture() {
+void screenCapture()
+{
     Image openglImg(imgW, imgH);
     auto *pixels = new unsigned char[3 * imgW * imgH];
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadBuffer(GL_BACK);
     glReadPixels(0, 0, imgW, imgH, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-    for (int x = 0; x < imgW; ++x) {
-        for (int y = 0; y < imgH; ++y) {
+    for (int x = 0; x < imgW; ++x)
+    {
+        for (int y = 0; y < imgH; ++y)
+        {
             Vector3f color(
-                    pixels[3 * (y * imgW + x) + 0] / 255.0,
-                    pixels[3 * (y * imgW + x) + 1] / 255.0,
-                    pixels[3 * (y * imgW + x) + 2] / 255.0);
+                pixels[3 * (y * imgW + x) + 0] / 255.0,
+                pixels[3 * (y * imgW + x) + 1] / 255.0,
+                pixels[3 * (y * imgW + x) + 2] / 255.0);
             openglImg.SetPixel(x, y, color);
         }
     }
@@ -45,35 +49,44 @@ void screenCapture() {
 }
 
 //  Called when mouse button is pressed.
-void mouseFunc(int button, int state, int x, int y) {
-    if (state == GLUT_DOWN) {
+void mouseFunc(int button, int state, int x, int y)
+{
+    if (state == GLUT_DOWN)
+    {
 
-        switch (button) {
-            case GLUT_LEFT_BUTTON:
-                cameraController->mouseClick(CameraController::LEFT, x, y);
-                break;
-            case GLUT_MIDDLE_BUTTON:
-                cameraController->mouseClick(CameraController::MIDDLE, x, y);
-                break;
-            case GLUT_RIGHT_BUTTON:
-                cameraController->mouseClick(CameraController::RIGHT, x, y);
-            default:
-                break;
+        switch (button)
+        {
+        case GLUT_LEFT_BUTTON:
+            cameraController->mouseClick(CameraController::LEFT, x, y);
+            break;
+        case GLUT_MIDDLE_BUTTON:
+            cameraController->mouseClick(CameraController::MIDDLE, x, y);
+            break;
+        case GLUT_RIGHT_BUTTON:
+            cameraController->mouseClick(CameraController::RIGHT, x, y);
+        default:
+            break;
         }
-    } else {
+    }
+    else
+    {
         cameraController->mouseRelease(x, y);
     }
     glutPostRedisplay();
 }
 
+// Called when mouse wheel rolled
+
 // Called when mouse is moved while button pressed.
-void motionFunc(int x, int y) {
+void motionFunc(int x, int y)
+{
     cameraController->mouseDrag(x, y);
     glutPostRedisplay();
 }
 
 // Called when the window is resized
-void reshapeFunc(int w, int h) {
+void reshapeFunc(int w, int h)
+{
     sceneParser->getCamera()->resize(w, h);
     glViewport(0, 0, w, h);
     imgW = w;
@@ -81,7 +94,8 @@ void reshapeFunc(int w, int h) {
 }
 
 // This function is responsible for displaying the object.
-void drawScene() {
+void drawScene()
+{
     Vector3f backGround = sceneParser->getBackgroundColor();
     glClearColor(backGround.x(), backGround.y(), backGround.z(), 1.0);
 
@@ -92,7 +106,8 @@ void drawScene() {
     sceneParser->getCamera()->setupGLMatrix();
 
     // Turn On all lights.
-    for (int li = 0; li < sceneParser->getNumLights(); ++li) {
+    for (int li = 0; li < sceneParser->getNumLights(); ++li)
+    {
         Light *light = sceneParser->getLight(li);
         light->turnOn(li);
     }
@@ -104,27 +119,32 @@ void drawScene() {
     glutSwapBuffers();
 
     // Save if not in interactive mode.
-    if (!savePicturePath.empty()) {
+    if (!savePicturePath.empty())
+    {
         screenCapture();
-        exit(0);
+        glutLeaveMainLoop();
     }
 }
 
-float getCenterDepth() {
+float getCenterDepth()
+{
     Camera *cam = sceneParser->getCamera();
     Ray centerRay = sceneParser->getCamera()->generateRay(
-            Vector2f((float) cam->getWidth() / 2, (float) cam->getHeight() / 2));
+        Vector2f((float)cam->getWidth() / 2, (float)cam->getHeight() / 2));
     Hit hit;
     bool isHit = sceneParser->getGroup()->intersect(centerRay, hit, 0.0);
     return isHit ? hit.getT() : 10.0f;
 }
 
-int main(int argc, char *argv[]) {
-    for (int argNum = 1; argNum < argc; ++argNum) {
+int main(int argc, char *argv[])
+{
+    for (int argNum = 1; argNum < argc; ++argNum)
+    {
         std::cout << "Argument " << argNum << " is: " << argv[argNum] << std::endl;
     }
 
-    if (argc != 3 && argc != 2) {
+    if (argc != 3 && argc != 2)
+    {
         cout << "Usage: PA2 <input scene file> [output image file]" << endl;
         cout << "  If the output path is not specified, program will enter interactive mode." << endl;
         return 1;
@@ -136,7 +156,8 @@ int main(int argc, char *argv[]) {
     float lookAtDistance = getCenterDepth();
     cameraController = new CameraController(dynamic_cast<PerspectiveCamera *>(cam), lookAtDistance);
 
-    if (argc == 3) savePicturePath = argv[2];
+    if (argc == 3)
+        savePicturePath = argv[2];
     cout << "Look At Distance = " << lookAtDistance << endl;
 
     // Initialize GLUT
@@ -170,4 +191,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
