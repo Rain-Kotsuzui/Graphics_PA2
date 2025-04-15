@@ -6,8 +6,8 @@
         "request": "launch",
         "program": "${workspaceFolder}/build/PA2",
         "args": [
-            "testcases/scene04_axes.txt",
-            "output/01.bmp"
+            "testcases/B.txt",
+            "output/B.bmp"
         ],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",
@@ -34,7 +34,7 @@
         "request": "launch",
         "program": "${workspaceFolder}/build/PA2",
         "args": [
-            "testcases/scene10_wineglass.txt",
+            "testcases/B.txt",
         ],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",
