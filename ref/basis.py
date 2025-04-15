@@ -111,6 +111,7 @@ if __name__ == '__main__':
 
     lines = []
     deriv_lines = []
+    
     for t in t_range:
         pt, dpt, lsk = b.evaluate(t)
         expanded_pt = np.zeros(n,)
@@ -128,6 +129,7 @@ if __name__ == '__main__':
     plt.grid()
     plt.title('Basis function for ' + description)
     plt.savefig('output1.png')
+    
     plt.figure()
     for dl in deriv_lines:
         plt.plot(t_range, dl)

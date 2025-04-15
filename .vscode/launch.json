@@ -34,7 +34,7 @@
         "request": "launch",
         "program": "${workspaceFolder}/build/PA2",
         "args": [
-            "testcases/nailong.txt",
+            "testcases/scene10_wineglass.txt",
         ],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",
